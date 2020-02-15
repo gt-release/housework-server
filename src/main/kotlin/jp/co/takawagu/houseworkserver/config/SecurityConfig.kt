@@ -44,7 +44,7 @@ class SecurityConfig(private val authenticationManager: JwtAuthenticationManager
         val configuration = CorsConfiguration()
         configuration.allowCredentials = true
         configuration.allowedOrigins = listOf("*")
-        configuration.allowedMethods = listOf("GET", "POST", "DELETE", "PUT")
+        configuration.allowedMethods = listOf("GET", "POST", "DELETE", "PUT", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
