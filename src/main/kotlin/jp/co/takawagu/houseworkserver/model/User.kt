@@ -9,5 +9,6 @@ data class User(
         @Id
         val userId: UUID?,
         val userName: String,
-        var password: String
+        var password: String?,
+        val color: String
 )

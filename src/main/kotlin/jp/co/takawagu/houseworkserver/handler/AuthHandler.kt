@@ -34,12 +34,14 @@ class AuthHandler(private val passwordEncoder: PasswordEncoder,
             userRepository.findByUserName(it.userName)
                     .flatMap { user ->
                         if(passwordEncoder.matches(it.password, user.password)) {
-                            ServerResponse.ok().bodyValue(LoginResponse(jwtTokenUtil.generateToken(user)))
+                            ServerResponse.ok().bodyValue(LoginResponse(jwtTokenUtil.generateToken(user), user.userId, user.userName))
                         } else {
                             ServerResponse.badRequest().build()
                         }
                     }.switchIfEmpty(ServerResponse.badRequest().build())
         }
     }
+
+    fun getAllUser(req: ServerRequest) = ServerResponse.ok().body(userRepository.getAllUser(), User::class.java)
 }
 

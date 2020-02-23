@@ -1,9 +1,6 @@
 package jp.co.takawagu.houseworkserver.config
 
-import jp.co.takawagu.houseworkserver.handler.AuthHandler
-import jp.co.takawagu.houseworkserver.handler.DutyHandler
-import jp.co.takawagu.houseworkserver.handler.PocketHandler
-import jp.co.takawagu.houseworkserver.handler.WorkHandler
+import jp.co.takawagu.houseworkserver.handler.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -14,7 +11,9 @@ import org.springframework.web.reactive.function.server.router
 class SimpleRoute(private val dutyHandler: DutyHandler,
                   private val workHandler: WorkHandler,
                   private val pocketHandler: PocketHandler,
-                  private val authHandler: AuthHandler) {
+                  private val authHandler: AuthHandler,
+                  private val memoHandler: MemoHandler
+) {
 
     @Bean
     fun route() = router {
@@ -30,12 +29,16 @@ class SimpleRoute(private val dutyHandler: DutyHandler,
             GET("/used").invoke(pocketHandler::getAll)
             POST("/used/add").invoke(pocketHandler::addUsed)
             DELETE("/used/delete").invoke(pocketHandler::delete)
+            GET("/memo").invoke(memoHandler::getAll)
+            POST("/memo/add").invoke(memoHandler::add)
+            DELETE("/memo/delete").invoke(memoHandler::delete)
         }
     }
 
     @Bean
     fun authRoute() = router {
         accept(APPLICATION_JSON).nest {
+            GET("/auth/user").invoke(authHandler::getAllUser)
             POST("/auth/login").invoke(authHandler::login)
 //            POST("/auth/signup").invoke(authHandler::signUp)
         }
