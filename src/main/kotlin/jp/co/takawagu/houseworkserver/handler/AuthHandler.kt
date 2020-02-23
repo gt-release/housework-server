@@ -4,7 +4,9 @@ import jp.co.takawagu.houseworkserver.config.JwtTokenUtil
 import jp.co.takawagu.houseworkserver.model.LoginRequest
 import jp.co.takawagu.houseworkserver.model.LoginResponse
 import jp.co.takawagu.houseworkserver.model.User
+import jp.co.takawagu.houseworkserver.repository.SecurityContextRepository
 import jp.co.takawagu.houseworkserver.repository.UserRepository
+import org.springframework.http.HttpHeaders
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -34,7 +36,8 @@ class AuthHandler(private val passwordEncoder: PasswordEncoder,
             userRepository.findByUserName(it.userName)
                     .flatMap { user ->
                         if(passwordEncoder.matches(it.password, user.password)) {
-                            ServerResponse.ok().bodyValue(LoginResponse(jwtTokenUtil.generateToken(user), user.userId, user.userName))
+                            ServerResponse.ok().bodyValue(
+                                    LoginResponse(jwtTokenUtil.generateToken(user), user.userId, user.userName, user.color))
                         } else {
                             ServerResponse.badRequest().build()
                         }
@@ -43,5 +46,11 @@ class AuthHandler(private val passwordEncoder: PasswordEncoder,
     }
 
     fun getAllUser(req: ServerRequest) = ServerResponse.ok().body(userRepository.getAllUser(), User::class.java)
+
+    fun getUserInfo(req: ServerRequest): Mono<ServerResponse> {
+        val token = req.headers().header(HttpHeaders.AUTHORIZATION)[0].replace(SecurityContextRepository.TOKEN_PREFIX, "")
+        val user = userRepository.findByUserName(jwtTokenUtil.getUserNameFromToken(token)).doOnNext { it.password = null }
+        return ServerResponse.ok().body(user, User::class.java)
+    }
 }
 

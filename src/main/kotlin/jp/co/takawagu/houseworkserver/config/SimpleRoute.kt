@@ -32,13 +32,14 @@ class SimpleRoute(private val dutyHandler: DutyHandler,
             GET("/memo").invoke(memoHandler::getAll)
             POST("/memo/add").invoke(memoHandler::add)
             DELETE("/memo/delete").invoke(memoHandler::delete)
+            GET("/user").invoke(authHandler::getUserInfo)
         }
     }
 
     @Bean
     fun authRoute() = router {
         accept(APPLICATION_JSON).nest {
-            GET("/auth/user").invoke(authHandler::getAllUser)
+            GET("/auth/users").invoke(authHandler::getAllUser)
             POST("/auth/login").invoke(authHandler::login)
 //            POST("/auth/signup").invoke(authHandler::signUp)
         }
